@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 cmake_policy(SET CMP0091 NEW)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
 
-project(HercControl VERSION 1.1.1)
+project(HercControl VERSION 1.1.2)
 
 #include(CTest)
 #enable_testing()
