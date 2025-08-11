@@ -11,7 +11,7 @@ jobs:
 
     services:
       vm370:
-        image: adriansutherland/vm370:latest
+        image: rosspatterson/vm370:latest
         ports:
           - 8038:8038
 
