@@ -249,6 +249,7 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 					cerr << rang::fg::cyan << "Timeout Reset" << rang::style::reset << endl;
 			}
 		}
+		console.insert(console.begin(), saveConsole.begin(), saveConsole.end());
 		throw runtime_error("Timeout");
 	}
 }
