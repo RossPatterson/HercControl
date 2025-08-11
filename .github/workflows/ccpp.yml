@@ -63,7 +63,7 @@ jobs:
 
     - name: Upload Executable
       if: startsWith(github.ref, 'refs/tags/')
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: HercControl-Ubuntu
         path: "${{ runner.temp }}/exe"
@@ -109,7 +109,7 @@ jobs:
 
     - name: Upload Executable
       if: startsWith(github.ref, 'refs/tags/')
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: HercControl-Windows
         path: "${{ runner.temp }}/exe"
@@ -155,7 +155,7 @@ jobs:
 
       - name: Upload Executable
         if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: HercControl-MacOS
           path: "${{ runner.temp }}/exe"
@@ -170,7 +170,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Get ubuntu binary 
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: HercControl-Ubuntu
 
@@ -179,7 +179,7 @@ jobs:
           zip -r HercControl-Ubuntu.zip HercControl-Ubuntu
 
       - name: Get windows binary 
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: HercControl-Windows
 
@@ -188,7 +188,7 @@ jobs:
           zip -r HercControl-Windows.zip HercControl-Windows
 
       - name: Get macos binary
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: HercControl-MacOS
 
