@@ -173,6 +173,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: HercControl-Ubuntu
+          path: HercControl-Ubuntu
 
       - name: ZIP ubuntu binary 
         run: 
@@ -182,6 +183,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: HercControl-Windows
+          path: HercControl-Windows
 
       - name: ZIP windows binary 
         run: 
@@ -191,6 +193,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: HercControl-MacOS
+          path: HercControl-MacOS
 
       - name: ZIP macos binary
         run:
