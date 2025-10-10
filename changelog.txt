@@ -1,5 +1,6 @@
 HercControl Change Log
 ======================
+Issue   00002 - cgibin.c:cgibin_syslog() writes the "</PRE>" without a leading \n, check for it that way.
 Issue   00001 - Timeout doesn't display saved console.
 Feature f0102 - Control returned. Output all console, last (found line) line or silent (nothing)
 Feature f0101 - Set marker. Allows the read from point (marker) to be set so that the console can be read to get external events like mounting a tape

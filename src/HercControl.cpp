@@ -362,7 +362,9 @@ void callHerculesConsole(string command, int requested_console_size, vector<stri
 
 		if (keep)
 		{
-			if (line.compare(R"(</PRE>)"s) == 0)
+			// cgibin.c:cgibin_syslog() writes the "</PRE>" without a leading \n,
+			// so check that the line ends with it.
+			if (line.length() >= 6 && line.compare(line.length() - 6, 6, R"(</PRE>)"s) == 0)
 				keep = false;
 			else
 				console.push_back(line);
@@ -371,6 +373,7 @@ void callHerculesConsole(string command, int requested_console_size, vector<stri
 			keep = true;
 	}
 }
+
 
 string makeMarker()
 {
