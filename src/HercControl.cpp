@@ -86,6 +86,7 @@ int main(int argc, char** argv)
 		app.allow_windows_style_options(false);
 
 		app.parse(argc, argv);
+		currentHistorySize = startHistorySize;
 
 		if (debug)
 		{
