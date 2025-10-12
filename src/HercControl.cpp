@@ -372,7 +372,11 @@ void callHerculesConsole(string command, int requested_console_size, vector<stri
 		}
 		else if (line.compare(R"(<PRE>)"s) == 0)
 			keep = true;
+		else if (debug)
+			cerr << rang::fg::cyan << "Ignoring syslog line: " + line << cmd << rang::style::reset << endl;
 	}
+	if (debug)
+		cerr << rang::fg::cyan << "console size: " + console.size() + " lines" << cmd << rang::style::reset << endl;
 }
 
 
