@@ -267,6 +267,8 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 
 void getResponseFromMarker(string command, string marker, vector<string>& console)
 {
+	static size_t lastConsoleSize = -1;
+
 	if (debug) {
 		cerr << rang::fg::cyan << "lastConsoleSize="s << lastConsoleSize << rang::style::reset << endl;
 		cerr << rang::fg::cyan << "console.size() before callHerculesConsole()="s << console.size() << rang::style::reset << endl;
@@ -276,7 +278,6 @@ void getResponseFromMarker(string command, string marker, vector<string>& consol
 		cerr << rang::fg::cyan << "console.size() after callHerculesConsole()="s << console.size() << rang::style::reset << endl;
 
 	auto consoleSize = console.size();
-	static size_t lastConsoleSize = -1;
 
 	if (lastConsoleSize != -1)
 	{
@@ -332,7 +333,7 @@ void callHerculesConsole(string command, int requested_console_size, vector<stri
 
 	this_thread::sleep_for(chrono::milliseconds(sleepWait));
 
-#error Why does it do this?  Throws away previously collected console lines!
+// #error Why does it do this?  Throws away previously collected console lines!
 	console.clear();
 
 	auto cmd = R"(http://)"s;
