@@ -168,10 +168,14 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 			callHerculesConsole("* "s + marker, 1, console);
 		}
 
+		if (debug)
+			cerr << rang::fg::cyan << "calling initial getResponseFromMarker()"s << rang::style::reset << endl;
 		getResponseFromMarker(command, marker, console);
 
 		while (secondsSince(begin) < timeOut)
 		{
+			if (debug)
+				cerr << rang::fg::cyan << "console.size() at top of main while()="s << console.size() << rang::style::reset << endl;
 			auto savedConsoleLength = console.size();
 
 			// Find the string ...
@@ -179,6 +183,8 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 			{
 				if (foundEnd(*i, waitFor))
 				{
+					if (debug)
+						cerr << rang::fg::cyan << "found waitFor"s << rang::style::reset << endl;
 					for (i++; i != console.end(); console.erase(i))
 						; // erase the rest of the output
 
@@ -239,8 +245,12 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 					throw runtime_error("Failed to Remark output");
 			}
 
+			if (debug)
+				cerr << rang::fg::cyan << "waiting for "s << sleepWait << " ms"s << rang::style::reset << endl;
 			// Now we can wait and refresh
 			this_thread::sleep_for(chrono::milliseconds(sleepWait));
+			if (debug)
+				cerr << rang::fg::cyan << "calling loop getResponseFromMarker()"s << rang::style::reset << endl;
 			getResponseFromMarker("", marker, console);
 			if (savedConsoleLength != console.size())
 			{
@@ -257,7 +267,13 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 
 void getResponseFromMarker(string command, string marker, vector<string>& console)
 {
+	if (debug) {
+		cerr << rang::fg::cyan << "lastConsoleSize="s << lastConsoleSize << rang::style::reset << endl;
+		cerr << rang::fg::cyan << "console.size() before callHerculesConsole()="s << console.size() << rang::style::reset << endl;
+	}
 	callHerculesConsole(command, currentHistorySize, console);
+	if (debug)
+		cerr << rang::fg::cyan << "console.size() after callHerculesConsole()="s << console.size() << rang::style::reset << endl;
 
 	auto consoleSize = console.size();
 	static size_t lastConsoleSize = -1;
@@ -278,12 +294,22 @@ void getResponseFromMarker(string command, string marker, vector<string>& consol
 	{
 		if (*i == "* "s + marker)
 		{
+		if (debug)
+			cerr << rang::fg::cyan << "found marker"s << rang::style::reset << endl;
 			console.erase(i);
 			lastConsoleSize = -1;
 			return;
 		}
 		else
 			i = console.erase(i);
+	}
+	if (debug)
+	{
+		cerr << rang::fg::cyan << "console.size() after pruning from marker="s << console.size() << rang::style::reset << endl;
+		auto i=1;
+		for (const auto line : console)
+			cerr << endl << to_string(i++) + ": "s + line;
+		cerr << rang::style::reset << endl;
 	}
 
 	// Not found - we need more history!
@@ -306,6 +332,7 @@ void callHerculesConsole(string command, int requested_console_size, vector<stri
 
 	this_thread::sleep_for(chrono::milliseconds(sleepWait));
 
+#error Why does it do this?  Throws away previously collected console lines!
 	console.clear();
 
 	auto cmd = R"(http://)"s;
@@ -375,14 +402,14 @@ void callHerculesConsole(string command, int requested_console_size, vector<stri
 //		else if (debug)
 //			cerr << rang::fg::cyan << "Ignoring syslog line: "s + line << rang::style::reset << endl;
 	}
-	if (debug)
-	{
-		cerr << rang::fg::cyan << "console ("s + to_string(console.size()) + " lines):"s;
-		auto i=1;
-		for (const auto line : console)
-			cerr << endl << to_string(i++) + ": "s + line;
-		cerr << rang::style::reset << endl;
-	}
+//	if (debug)
+//	{
+//		cerr << rang::fg::cyan << "console ("s + to_string(console.size()) + " lines):"s;
+//		auto i=1;
+//		for (const auto line : console)
+//			cerr << endl << to_string(i++) + ": "s + line;
+//		cerr << rang::style::reset << endl;
+//	}
 }
 
 
