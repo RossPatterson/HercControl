@@ -175,7 +175,13 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 		while (secondsSince(begin) < timeOut)
 		{
 			if (debug)
+			{
 				cerr << rang::fg::cyan << "console.size() at top of main while()="s << console.size() << rang::style::reset << endl;
+				auto i=1;
+				for (const auto line : console)
+					cerr << endl << to_string(i++) + ": "s + line;
+				cerr << rang::style::reset << endl;
+			}
 			auto savedConsoleLength = console.size();
 
 			// Find the string ...
@@ -270,7 +276,7 @@ void getResponseFromMarker(string command, string marker, vector<string>& consol
 	static size_t lastConsoleSize = -1;
 
 	if (debug) {
-		cerr << rang::fg::cyan << "lastConsoleSize="s << lastConsoleSize << rang::style::reset << endl;
+		cerr << rang::fg::cyan << "lastConsoleSize="s << to_string(lastConsoleSize) << rang::style::reset << endl;
 		cerr << rang::fg::cyan << "console.size() before callHerculesConsole()="s << console.size() << rang::style::reset << endl;
 	}
 	callHerculesConsole(command, currentHistorySize, console);
