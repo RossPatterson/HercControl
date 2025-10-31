@@ -169,14 +169,14 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 		}
 
 		if (debug)
-			cerr << rang::fg::cyan << "calling initial getResponseFromMarker()"s << rang::style::reset << endl;
+			cerr << rang::fg::cyan << "CHC1: calling initial getResponseFromMarker()"s << rang::style::reset << endl;
 		getResponseFromMarker(command, marker, console);
 
 		while (secondsSince(begin) < timeOut)
 		{
 			if (debug)
 			{
-				cerr << rang::fg::cyan << "console.size() at top of main while()="s << console.size() << rang::style::reset << endl;
+				cerr << rang::fg::cyan << "CHC1: console.size() at top of main while()="s << console.size() << rang::style::reset << endl;
 				auto i=1;
 				for (const auto line : console)
 					cerr << endl << to_string(i++) + ": "s + line;
@@ -190,7 +190,7 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 				if (foundEnd(*i, waitFor))
 				{
 					if (debug)
-						cerr << rang::fg::cyan << "found waitFor"s << rang::style::reset << endl;
+						cerr << rang::fg::cyan << "CHC1: found waitFor"s << rang::style::reset << endl;
 					for (i++; i != console.end(); console.erase(i))
 						; // erase the rest of the output
 
@@ -243,7 +243,7 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 						hasRemarked = true;
 						savedConsoleLength = -1;
 						if (debug)
-							cerr << rang::fg::cyan << "Remark done" << rang::style::reset << endl;
+							cerr << rang::fg::cyan << "CHC1: Remark done" << rang::style::reset << endl;
 						break;
 					}
 				}
@@ -252,18 +252,18 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 			}
 
 			if (debug)
-				cerr << rang::fg::cyan << "waiting for "s << sleepWait << " ms"s << rang::style::reset << endl;
+				cerr << rang::fg::cyan << "CHC1: waiting for "s << sleepWait << " ms"s << rang::style::reset << endl;
 			// Now we can wait and refresh
 			this_thread::sleep_for(chrono::milliseconds(sleepWait));
 			if (debug)
-				cerr << rang::fg::cyan << "calling loop getResponseFromMarker()"s << rang::style::reset << endl;
+				cerr << rang::fg::cyan << "CHC1: calling loop getResponseFromMarker()"s << rang::style::reset << endl;
 			getResponseFromMarker("", marker, console);
 			if (savedConsoleLength != console.size())
 			{
 				// Something has been writen to the console - so reset the timeout
 				begin = chrono::steady_clock::now();
 				if (debug)
-					cerr << rang::fg::cyan << "Timeout Reset" << rang::style::reset << endl;
+					cerr << rang::fg::cyan << "CHC1: Timeout Reset" << rang::style::reset << endl;
 			}
 		}
 		console.insert(console.begin(), saveConsole.begin(), saveConsole.end());
@@ -274,14 +274,17 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 void getResponseFromMarker(string command, string marker, vector<string>& console)
 {
 	static size_t lastConsoleSize = -1;
+	static int depth = 0;
+	auto me = "GRFM_"s + to_string(++depth) + ":"s;
 
 	if (debug) {
-		cerr << rang::fg::cyan << "lastConsoleSize="s << to_string(lastConsoleSize) << rang::style::reset << endl;
-		cerr << rang::fg::cyan << "console.size() before callHerculesConsole()="s << console.size() << rang::style::reset << endl;
+		cerr << rang::fg::cyan << me << "depth increased to "s << to_string(++depth) << rang::style::reset << endl;
+		cerr << rang::fg::cyan << me << "lastConsoleSize="s << to_string(lastConsoleSize) << rang::style::reset << endl;
+		cerr << rang::fg::cyan << me << "console.size() before callHerculesConsole()="s << console.size() << rang::style::reset << endl;
 	}
 	callHerculesConsole(command, currentHistorySize, console);
 	if (debug)
-		cerr << rang::fg::cyan << "console.size() after callHerculesConsole()="s << console.size() << rang::style::reset << endl;
+		cerr << rang::fg::cyan << me << "console.size() after callHerculesConsole()="s << console.size() << rang::style::reset << endl;
 
 	auto consoleSize = console.size();
 
@@ -301,10 +304,18 @@ void getResponseFromMarker(string command, string marker, vector<string>& consol
 	{
 		if (*i == "* "s + marker)
 		{
-		if (debug)
-			cerr << rang::fg::cyan << "found marker"s << rang::style::reset << endl;
 			console.erase(i);
+			if (debug)
+			{
+				cerr << rang::fg::cyan << me << "found marker, final size="s << console.size() << rang::style::reset << endl;
+				auto j=1;
+				for (const auto line : console)
+					cerr << endl << to_string(j++) + ": "s + line;
+				cerr << rang::style::reset << endl;
+			}
 			lastConsoleSize = -1;
+			if (debug)
+				cerr << rang::fg::cyan << me << "depth decreased to "s << to_string(--depth) << rang::style::reset << endl;
 			return;
 		}
 		else
@@ -312,21 +323,23 @@ void getResponseFromMarker(string command, string marker, vector<string>& consol
 	}
 	if (debug)
 	{
-		cerr << rang::fg::cyan << "console.size() after pruning from marker="s << console.size() << rang::style::reset << endl;
-		auto i=1;
+		cerr << rang::fg::cyan << me << "console.size() after pruning from marker="s << console.size() << rang::style::reset << endl;
+		auto j=1;
 		for (const auto line : console)
-			cerr << endl << to_string(i++) + ": "s + line;
+			cerr << endl << to_string(j++) + ": "s + line;
 		cerr << rang::style::reset << endl;
 	}
 
 	// Not found - we need more history!
 	currentHistorySize *= 2;
 	if (debug)
-		cerr << rang::fg::cyan << "History extended to " << currentHistorySize << rang::style::reset << endl;
+		cerr << rang::fg::cyan << me << "History extended to " << currentHistorySize << rang::style::reset << endl;
 
 	// Recursive
 	lastConsoleSize = consoleSize; // allows us to check is we have all history
 	getResponseFromMarker(""s, marker, console);
+	if (debug)
+		cerr << rang::fg::cyan << me << "depth decreased to "s << to_string(--depth) << rang::style::reset << endl;
 }
 
 void callHerculesConsole(string command, int requested_console_size, vector<string>& console)
@@ -347,13 +360,13 @@ void callHerculesConsole(string command, int requested_console_size, vector<stri
 	cmd.append(host);
 	cmd.append(R"(/cgi-bin/tasks/syslog)"s);
 	if (debug)
-		cerr << rang::fg::cyan << "Command: " << cmd << rang::style::reset << endl;
+		cerr << rang::fg::cyan << "CHC2: Command: " << cmd << rang::style::reset << endl;
 	while (secondsSince(begin) < timeOut) {
 
 		http_call = cpr::Get(cpr::Url{ cmd }, cpr::Parameters{ {"command"s, command}, {"msgcount"s, to_string(lines_wanted)} });
 		if (debug) {
-			cerr << rang::fg::cyan << "Error Code: "s << (int)http_call.error.code << rang::style::reset << endl;
-			cerr << rang::fg::cyan << "Error Message: "s << http_call.error.message << rang::style::reset << endl;
+			cerr << rang::fg::cyan << "CHC2: Error Code: "s << (int)http_call.error.code << rang::style::reset << endl;
+			cerr << rang::fg::cyan << "CHC2: Error Message: "s << http_call.error.message << rang::style::reset << endl;
 		}
 		if (http_call.status_code < 200 || http_call.status_code > 299)
 		{
@@ -407,11 +420,11 @@ void callHerculesConsole(string command, int requested_console_size, vector<stri
 		else if (line.compare(R"(<PRE>)"s) == 0)
 			keep = true;
 //		else if (debug)
-//			cerr << rang::fg::cyan << "Ignoring syslog line: "s + line << rang::style::reset << endl;
+//			cerr << rang::fg::cyan << "CHC2: Ignoring syslog line: "s + line << rang::style::reset << endl;
 	}
 //	if (debug)
 //	{
-//		cerr << rang::fg::cyan << "console ("s + to_string(console.size()) + " lines):"s;
+//		cerr << rang::fg::cyan << "CHC2: console ("s + to_string(console.size()) + " lines):"s;
 //		auto i=1;
 //		for (const auto line : console)
 //			cerr << endl << to_string(i++) + ": "s + line;
