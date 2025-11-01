@@ -70,6 +70,7 @@ jobs:
 
 #**************************************************#
   build-windows:
+    if: startsWith(github.ref, 'fails building cURL')
     name: Build for Windows
     # runs-on: [windows-latest]
     runs-on: [windows-2022]
@@ -117,6 +118,7 @@ jobs:
 
   #**************************************************#
   build-macos:
+    if: startsWith(github.ref, 'fails building cURL')
     name: Build for MacOS
     runs-on: [macos-latest]
 
@@ -165,7 +167,8 @@ jobs:
   release:
     if: startsWith(github.ref, 'refs/tags/')
     name: Release
-    needs: [build-ubuntu, build-windows, build-macos]
+    # needs: [build-ubuntu, build-windows, build-macos]
+    needs: [build-ubuntu]
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v1
@@ -180,25 +183,25 @@ jobs:
         run: 
           zip -r HercControl-Ubuntu.zip HercControl-Ubuntu
 
-      - name: Get windows binary 
-        uses: actions/download-artifact@v4
-        with:
-          name: HercControl-Windows
-          path: HercControl-Windows
+      #- name: Get windows binary 
+      #  uses: actions/download-artifact@v4
+      #  with:
+      #    name: HercControl-Windows
+      #    path: HercControl-Windows
 
-      - name: ZIP windows binary 
-        run: 
-          zip -r HercControl-Windows.zip HercControl-Windows
+      #- name: ZIP windows binary 
+      #  run: 
+      #    zip -r HercControl-Windows.zip HercControl-Windows
 
-      - name: Get macos binary
-        uses: actions/download-artifact@v4
-        with:
-          name: HercControl-MacOS
-          path: HercControl-MacOS
+      #- name: Get macos binary
+      #  uses: actions/download-artifact@v4
+      #  with:
+      #    name: HercControl-MacOS
+      #    path: HercControl-MacOS
 
-      - name: ZIP macos binary
-        run:
-          zip -r HercControl-MacOS.zip HercControl-MacOS
+      #- name: ZIP macos binary
+      #  run:
+      #    zip -r HercControl-MacOS.zip HercControl-MacOS
 
       - name: Create Release
         id: create_release
@@ -222,24 +225,24 @@ jobs:
           asset_name: HercControl-Ubuntu.zip
           asset_content_type: application/zip
 
-      - name: Upload Release Asset - MacOS
-        id: upload-release-asset-macos
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./HercControl-MacOS.zip
-          asset_name: HercControl-MacOS.zip
-          asset_content_type: application/zip
+      #- name: Upload Release Asset - MacOS
+      #  id: upload-release-asset-macos
+      #  uses: actions/upload-release-asset@v1.0.1
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  with:
+      #    upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #    asset_path: ./HercControl-MacOS.zip
+      #    asset_name: HercControl-MacOS.zip
+      #    asset_content_type: application/zip
 
-      - name: Upload Release Asset - Windows
-        id: upload-release-asset-windows 
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./HercControl-Windows.zip
-          asset_name: HercControl-Windows.zip
-          asset_content_type: application/zip
+      #- name: Upload Release Asset - Windows
+      #  id: upload-release-asset-windows 
+      #  uses: actions/upload-release-asset@v1.0.1
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  with:
+      #    upload_url: ${{ steps.create_release.outputs.upload_url }} 
+      #    asset_path: ./HercControl-Windows.zip
+      #    asset_name: HercControl-Windows.zip
+      #    asset_content_type: application/zip
