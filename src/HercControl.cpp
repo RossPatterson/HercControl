@@ -196,6 +196,8 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 
 					 // Prepend the saved Console
 					console.insert(console.begin(), saveConsole.begin(), saveConsole.end());
+						if (debug)
+							cerr << rang::fg::cyan << "CHC1: console extended, size="s << console.size() << rang::style::reset << endl;
 
 					return;
 				}
@@ -226,6 +228,8 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 
 						// Prepend the saved Console
 						console.insert(console.begin(), saveConsole.begin(), saveConsole.end());
+						if (debug)
+							cerr << rang::fg::cyan << "CHC1: console extended, size="s << console.size() << rang::style::reset << endl;
 
 						return;
 					}
@@ -236,6 +240,8 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 						for (; i != console.end(); console.erase(i))
 							;
 						saveConsole.insert(saveConsole.end(), console.begin(), console.end());
+						if (debug)
+							cerr << rang::fg::cyan << "CHC1: saveConsole extended, size="s << saveConsole.size() << rang::style::reset << endl;
 
 						marker = newMarker;
 						currentHistorySize = startHistorySize;
@@ -267,6 +273,8 @@ void callHerculesConsole(string command, string waitFor, vector<string>& console
 			}
 		}
 		console.insert(console.begin(), saveConsole.begin(), saveConsole.end());
+		if (debug)
+			cerr << rang::fg::cyan << "CHC1: console extended, size="s << console.size() << rang::style::reset << endl;
 		throw runtime_error("Timeout");
 	}
 }
@@ -278,7 +286,7 @@ void getResponseFromMarker(string command, string marker, vector<string>& consol
 	auto me = "GRFM_"s + to_string(++depth) + ":"s;
 
 	if (debug) {
-		cerr << rang::fg::cyan << me << "depth increased to "s << to_string(++depth) << rang::style::reset << endl;
+		cerr << rang::fg::cyan << me << "depth increased to "s << to_string(depth) << rang::style::reset << endl;
 		cerr << rang::fg::cyan << me << "lastConsoleSize="s << to_string(lastConsoleSize) << rang::style::reset << endl;
 		cerr << rang::fg::cyan << me << "console.size() before callHerculesConsole()="s << console.size() << rang::style::reset << endl;
 	}
@@ -300,14 +308,16 @@ void getResponseFromMarker(string command, string marker, vector<string>& consol
 		}
 	}
 
+	auto k = 0;
 	for (auto i = console.begin(); i != console.end();)
 	{
+		k++;
 		if (*i == "* "s + marker)
 		{
 			console.erase(i);
 			if (debug)
 			{
-				cerr << rang::fg::cyan << me << "found marker, final size="s << console.size() << rang::style::reset << endl;
+				cerr << rang::fg::cyan << me << "found marker at line "s << to_string(k) << ", final size="s << console.size() << rang::style::reset << endl;
 				auto j=1;
 				for (const auto line : console)
 					cerr << endl << to_string(j++) + ": "s + line;
@@ -353,6 +363,8 @@ void callHerculesConsole(string command, int requested_console_size, vector<stri
 	this_thread::sleep_for(chrono::milliseconds(sleepWait));
 
 // #error Why does it do this?  Throws away previously collected console lines!
+	if (debug)
+		cerr << rang::fg::cyan << "CHC2: Clearing console, size was: "s << console.size() << rang::style::reset << endl;
 	console.clear();
 
 	auto cmd = R"(http://)"s;
@@ -419,17 +431,17 @@ void callHerculesConsole(string command, int requested_console_size, vector<stri
 		}
 		else if (line.compare(R"(<PRE>)"s) == 0)
 			keep = true;
-//		else if (debug)
-//			cerr << rang::fg::cyan << "CHC2: Ignoring syslog line: "s + line << rang::style::reset << endl;
+		else if (debug)
+			cerr << rang::fg::cyan << "CHC2: Ignoring syslog line: "s + line << rang::style::reset << endl;
 	}
-//	if (debug)
-//	{
-//		cerr << rang::fg::cyan << "CHC2: console ("s + to_string(console.size()) + " lines):"s;
-//		auto i=1;
-//		for (const auto line : console)
-//			cerr << endl << to_string(i++) + ": "s + line;
-//		cerr << rang::style::reset << endl;
-//	}
+	if (debug)
+	{
+		cerr << rang::fg::cyan << "CHC2: console ("s + to_string(console.size()) + " lines):"s;
+		auto i=1;
+		for (const auto line : console)
+			cerr << endl << to_string(i++) + ": "s + line;
+		cerr << rang::style::reset << endl;
+	}
 }
 
 
