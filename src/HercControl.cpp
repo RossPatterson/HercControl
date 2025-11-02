@@ -283,7 +283,7 @@ void getResponseFromMarker(string command, string marker, vector<string>& consol
 {
 	static size_t lastConsoleSize = -1;
 	static int depth = 0;
-	auto me = "GRFM_"s + to_string(++depth) + ":"s;
+	auto me = "GRFM_"s + to_string(++depth) + ": "s;
 
 	if (debug) {
 		cerr << rang::fg::cyan << me << "depth increased to "s << to_string(depth) << rang::style::reset << endl;
@@ -408,6 +408,9 @@ void callHerculesConsole(string command, int requested_console_size, vector<stri
 
 	while (getline(response, line, '\n'))
 	{
+		if (debug)
+			cerr << rang::fg::cyan << "CHC2: Response line: "s + line << rang::style::reset << endl;
+
 		line = trim(line);
 
 		// Need to check that the first line is <html>
