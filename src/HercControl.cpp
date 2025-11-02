@@ -375,7 +375,7 @@ void callHerculesConsole(string command, int requested_console_size, vector<stri
 		cerr << rang::fg::cyan << "CHC2: Command: " << cmd << rang::style::reset << endl;
 	while (secondsSince(begin) < timeOut) {
 
-		http_call = cpr::Get(cpr::Url{ cmd }, cpr::Parameters{ {"command"s, command}, {"msgcount"s, to_string(lines_wanted)} });
+		http_call = cpr::Get(cpr::Url{ cmd }, cpr::Parameters{ {"command"s, command}, {"msgcount"s, /*to_string(lines_wanted)*/ "0"} });
 		if (debug) {
 			cerr << rang::fg::cyan << "CHC2: Error Code: "s << (int)http_call.error.code << rang::style::reset << endl;
 			cerr << rang::fg::cyan << "CHC2: Error Message: "s << http_call.error.message << rang::style::reset << endl;
@@ -408,8 +408,8 @@ void callHerculesConsole(string command, int requested_console_size, vector<stri
 
 	while (getline(response, line, '\n'))
 	{
-		if (debug)
-			cerr << rang::fg::cyan << "CHC2: Response line: "s + line << rang::style::reset << endl;
+//		if (debug)
+//			cerr << rang::fg::cyan << "CHC2: Response line: "s + line << rang::style::reset << endl;
 
 		line = trim(line);
 
